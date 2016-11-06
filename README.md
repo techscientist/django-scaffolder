@@ -11,11 +11,14 @@ Generate a Django model, views, URLconf, and templates using a single command.
 
 - Install `django-scaffolder`:
 
+        $ pip install https://github.com/bradlishman/django-scaffolder
+
+- One pypi package sync happens use this:
+
         $ pip install django-scaffolder
 
 - Add `generate_scaffold` to your `INSTALLED_APPS`
 - Run the `generatescaffold` management command:
-
 
         $ python manage.py generatescaffold --help
         ... displays usage
