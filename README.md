@@ -13,7 +13,7 @@ Generate a Django model, views, URLconf, and templates using a single command.
 
         $ pip install https://github.com/bradlishman/django-scaffolder
 
-- One pypi package sync happens use this:
+- Once pypi package sync happens use this:
 
         $ pip install django-scaffolder
 
