@@ -91,7 +91,7 @@ class BaseGenerator(object):
             return timestamp_field
 
         else:
-            for field in model._meta._fields():
+            for field in model._meta.get_fields():
                 if type(field) in [DateField, DateTimeField]:
                     return field
 

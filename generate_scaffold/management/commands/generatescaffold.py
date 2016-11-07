@@ -186,14 +186,14 @@ class Command(BaseCommand):
 
                 # FIXME - Use namespace dictionary
                 # exec code in globals()
-                exec(code, globals)
+                exec(code, globals())
 
                 # Get reference to generated_model
                 code_str = 'generated_model = {0}().__class__'.format(
                     rendered_model_name)
                 code = compile(code_str, '<string>', 'exec')
                 # exec code in globals()
-                exec(code, globals)
+                exec(code, globals())
 
                 generated_model = globals()['generated_model']
             else:
@@ -216,7 +216,7 @@ class Command(BaseCommand):
                     'and try again.'.format(app_views_init_filepath))))
             elif not os.path.exists(app_views_init_filepath):
                 with transaction.open(app_views_init_filepath, 'a+') as f:
-                    f.write('')
+                    f.write(u'')
             else:
                 #self.msg('exists', app_views_init_filepath)
                 self.stdout.write(app_views_init_filepath)
