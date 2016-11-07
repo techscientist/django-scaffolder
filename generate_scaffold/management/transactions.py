@@ -2,12 +2,12 @@ import codecs
 import os
 import shutil
 try:
-    import cStringIO as stringIOModule
+    import io as stringIOModule
 except ImportError:
     try:
-        import StringIO as stringIOModule
+        import cStringIO as stringIOModule
     except ImportError:
-        import io as stringIOModule
+        import StringIO as stringIOModule
 import tempfile
 
 
