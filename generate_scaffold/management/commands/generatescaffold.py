@@ -32,6 +32,12 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('app_name')
+        parser.add_argument('model_name')
+        parser.add_argument('fields', nargs='+')
+
+        # Named (optional) arguments
         parser.add_argument('-d', '--dry-run',
                             action='store_true',
                             dest='dry_run',
@@ -60,17 +66,17 @@ class Command(BaseCommand):
                                    'DateTimeFields to generated models.')
                             )
 
-    def handle(self, *args, **options):
+    def handle(self, **options):
         if settings.USE_I18N:
             translation.activate(settings.LANGUAGE_CODE)
 
         try:
-            self.generate_scaffold(*args, **options)
+            self.generate_scaffold(**options)
         finally:
             if settings.USE_I18N:
                 translation.deactivate()
 
-    def generate_scaffold(self, *args, **options):
+    def generate_scaffold(self, **options):
         global rendered_model, rendered_model_name
         self.verbose = int(options.get('verbosity')) > 1
         self.dry_run = options.get('dry_run', False)
@@ -83,10 +89,7 @@ class Command(BaseCommand):
                 'The --timestamp-field option can only be used if --model '
                 'is specified.')))
 
-        try:
-            app_name = args[0]
-        except IndexError:
-            raise CommandError('You must provide an app_name.')
+        app_name = options['app_name']
 
         if app_name not in settings.INSTALLED_APPS:
             raise CommandError(smart_str(_(
@@ -103,11 +106,7 @@ class Command(BaseCommand):
         app_dirpath = app_module.__path__[0]
 
         if not self.existing_model:
-            try:
-                model_name = args[1]
-            except IndexError:
-                raise CommandError(
-                    smart_str(_('You must provide a model_name.')))
+            model_name = options['model_name']
         else:
             model_name = self.existing_model
 
@@ -121,7 +120,7 @@ class Command(BaseCommand):
             raise CommandError(smart_str(_(
                 '{0} already exists.'.format(model_views_filepath))))
 
-        pos_args = [a.split(':') for a in args[2:]]
+        pos_args = [a.split(':') for a in options['fields']]
         model_field_args = []
         for a in pos_args:
             # Split for other_model relationship
@@ -169,7 +168,8 @@ class Command(BaseCommand):
                     self.stdout.write(f.read())
 
                 # FIXME - Reload models, use namespace
-                reload_django_appcache()
+                #reload_django_appcache()
+                reload_django_appcache(app_name)
                 exec('from {0}.models import *'.format(app_name))
 
             # The rest of the generators use model introspection to
@@ -187,14 +187,14 @@ class Command(BaseCommand):
 
                 # FIXME - Use namespace dictionary
                 # exec code in globals()
-                exec(code, globals)
+                exec(code, globals())
 
                 # Get reference to generated_model
                 code_str = 'generated_model = {0}().__class__'.format(
                     rendered_model_name)
                 code = compile(code_str, '<string>', 'exec')
                 # exec code in globals()
-                exec(code, globals)
+                exec(code, globals())
 
                 generated_model = globals()['generated_model']
             else:
@@ -217,7 +217,7 @@ class Command(BaseCommand):
                     'and try again.'.format(app_views_init_filepath))))
             elif not os.path.exists(app_views_init_filepath):
                 with transaction.open(app_views_init_filepath, 'a+') as f:
-                    f.write('')
+                    f.write(u'')
             else:
                 #self.msg('exists', app_views_init_filepath)
                 self.stdout.write(app_views_init_filepath)
@@ -235,7 +235,7 @@ class Command(BaseCommand):
             ### Generate URLs ###
             if not os.path.isfile(app_urls_filepath):
                 with transaction.open(app_urls_filepath, 'a+') as f:
-                    s = 'from django.conf.urls import patterns, url\n\n'
+                    s = 'from django.conf.urls import url\n\n'
                     f.write(s)
                     f.seek(0)
                     #self.log(f.read())

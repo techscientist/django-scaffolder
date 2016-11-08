@@ -4,6 +4,9 @@ Generate a Django model, views, URLconf, and templates using a single command.
 
 (Based on [django-generate-scaffold](https://github.com/modocache/django-generate-scaffold). Updated for Python 3 and Django 1.10. See the old screencast for an idea of how it runs [here](http://vimeo.com/42399125).)
 
+## Current Status
+
+Basically still broken. See current issues log for details.
 
 ## Usage
 
